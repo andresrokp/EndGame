@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
+
 // import { GET_USER } from 'graphql/user/queries'; //useEffect debe ir arriba,//
+
 // import { useParams, Link } from 'react-router-dom';
 // import { useQuery } from '@apollo/client';
 // import { useMutation } from '@apollo/client';

@@ -5,10 +5,34 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Auth0Provider } from '@auth0/auth0-react';
+import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 //
+import React from 'react';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import reportWebVitals from './reportWebVitals';
+
+const httpLink = createHttpLink({
+  uri: 'https://api.github.com/graphql'
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = process.env.REACT_APP_GITHUB_PERSONAL_TOKEN;
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ''
+    }
+  };
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+});
 
 ReactDOM.render(
   <Auth0Provider
@@ -18,7 +42,9 @@ ReactDOM.render(
   >
     <HelmetProvider>
       <BrowserRouter>
-        <App />
+        <ApolloProvider client={client}>
+          <App />
+        </ApolloProvider>
       </BrowserRouter>
     </HelmetProvider>
     ,
